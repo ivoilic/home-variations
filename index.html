@@ -1,21 +1,146 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<html>
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<title>Home Variations</title>
 		<meta name="description" content="">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="stylesheet" href="">
+		<link rel="stylesheet" href="./styles/normalize.css">
+
+		<link rel="preload" href="./images/1.jpg" as="image">
+		<link rel="preload" href="./images/2.jpg" as="image">
+		<link rel="preload" href="./images/3.jpg" as="image">
+		<link rel="preload" href="./images/4.jpg" as="image">
+		
+		<style>
+			html,body {
+				width: 100%;
+				height: 100%;
+				overflow: hidden;
+			}
+			body{
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				background-color: black;
+			}
+			canvas {
+				transform-origin: 50%;
+				transform: scale(0.5);
+			}
+		</style>
 	</head>
 	<body>
-		<!--[if lt IE 7]>
-			<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
-		<![endif]-->
-		
-		<script src="" async defer></script>
+		<script>
+			let Display = class {
+				constructor(startingImage) {
+					this.stepSpeed = 1000;
+					this.canvasId = "displayCanvas";
+					this.displayScale = 2;
+					this.w = {};
+					this.ctx = null;
+					this.displayRatio = 2/1.7;
+					this.images = [];
+					this.tileMap = [];
+					this.imagesX = 5;
+					this.imagesY = 3;
+					this.imageCount = 4;
+					this.startingImage = startingImage;
+				}
+
+				resetDisplay() {
+					this.calcDisplaySize();
+					let c = document.getElementById(this.canvasId);
+					c.width = this.width;
+					c.height = this.height;
+
+					this.drawAllTiles();
+
+				};
+
+				calcDisplaySize() {
+					if(window.innerWidth/window.innerHeight <= 2/1.7) {
+						this.width = window.innerWidth * this.displayScale;
+						this.height = window.innerWidth * 1.7 / 2 * this.displayScale;
+					}else{
+						this.width = window.innerHeight * 2 / 1.7 * this.displayScale;
+						this.height = window.innerHeight * this.displayScale;
+					}
+				}
+
+				init() {;
+
+					let c = document.createElement('canvas');
+					this.calcDisplaySize();
+					c.width = this.width;
+					c.height = this.height;
+					c.id = this.canvasId;
+					document.body.appendChild(c);
+					this.ctx = c.getContext("2d");
+
+					window.addEventListener("resize", e=>this.resetDisplay());
+
+					for(let x = 0; this.imagesX > x; x++){
+						for(let y = 0; this.imagesY > y; y++){
+							if(y == 0){
+								this.tileMap[x] = new Array();
+							}
+							this.tileMap[x][y] = this.startingImage;
+						}	
+					}
+
+					this.images[0] = new Image(2000, 1700);
+					this.images[0].onload = () => {this.drawAllTiles();};
+					this.images[0].src = './images/1.jpg';
+
+					this.images[1] = new Image(2000, 1700);
+					this.images[1].onload = () => {this.drawAllTiles();};
+					this.images[1].src = './images/2.jpg';
+
+					this.images[2] = new Image(2000, 1700);
+					this.images[2].onload = () => {this.drawAllTiles();};
+					this.images[2].src = './images/3.jpg';
+
+					this.images[3] = new Image(2000, 1700);
+					this.images[3].onload = () => {this.drawAllTiles();};
+					this.images[3].src = './images/4.jpg'
+
+					this.drawAllTiles();
+
+					setInterval( () => {
+						this.swapTile(Math.floor(Math.random() * this.imagesX), Math.floor(Math.random() * this.imagesY));
+					}, this.stepSpeed);
+				};
+				
+				drawAllTiles() {
+					for(let x = 0; this.imagesX > x; x++){
+						for(let y = 0; this.imagesY > y; y++){
+							this.drawTile(this.images[this.tileMap[x][y]], x, y);
+						}	
+					}
+				}
+
+				swapTile(x,y) {
+					this.tileMap[x][y] = this.tileMap[x][y] + 1 >= this.imageCount ? 0 : this.tileMap[x][y] + 1;
+					this.drawTile(this.images[this.tileMap[x][y]], x, y);
+				}
+
+				drawTile(image, x, y) {
+					this.ctx.drawImage(image,
+						x * (image.naturalWidth / this.imagesX), y * (image.naturalHeight / this.imagesY),
+						image.naturalWidth / this.imagesX, image.naturalHeight / this.imagesY,
+						x * (this.width / this.imagesX), y * (this.height / this.imagesY),
+						this.width / this.imagesX, this.height / this.imagesY
+					); 
+				}
+			};
+
+
+			let displayA = new Display(0);
+
+			displayA.init();
+
+		</script>
 	</body>
 </html>
