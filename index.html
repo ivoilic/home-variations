@@ -27,17 +27,19 @@
 			}
 			canvas {
 				transform-origin: 50%;
-				transform: scale(0.5);
+				transform: scale(1);
 			}
 		</style>
 	</head>
 	<body>
 		<script>
+			let displayAll = (window.location.hash === "" || window.location.hash === null);
+			let displayId = window.location.hash.split("#")[1] - 1;
 			let Display = class {
 				constructor(startingImage) {
 					this.stepSpeed = 1000;
-					this.canvasId = "displayCanvas";
-					this.displayScale = 2;
+					this.canvasId = "displayCanvas-"+startingImage;
+					this.displayScale = 1;
 					this.w = {};
 					this.ctx = null;
 					this.displayRatio = 2/1.7;
@@ -47,6 +49,8 @@
 					this.imagesY = 3;
 					this.imageCount = 4;
 					this.startingImage = startingImage;
+
+					this.init();
 				}
 
 				resetDisplay() {
@@ -60,12 +64,24 @@
 				};
 
 				calcDisplaySize() {
-					if(window.innerWidth/window.innerHeight <= 2/1.7) {
-						this.width = window.innerWidth * this.displayScale;
-						this.height = window.innerWidth * 1.7 / 2 * this.displayScale;
+
+					if(displayAll){
+						let modifiedWidth = window.innerWidth / this.imageCount;
+						if( modifiedWidth/ window.innerHeight <= 2/1.7) {
+							this.width = modifiedWidth * this.displayScale;
+							this.height = modifiedWidth * 1.7 / 2 * this.displayScale;
+						}else{
+							this.width = window.innerHeight * 2 / 1.7 * this.displayScale;
+							this.height = window.innerHeight * this.displayScale;
+						}
 					}else{
-						this.width = window.innerHeight * 2 / 1.7 * this.displayScale;
-						this.height = window.innerHeight * this.displayScale;
+						if( window.innerWidth / window.innerHeight <= 2/1.7) {
+							this.width = window.innerWidth * this.displayScale;
+							this.height = window.innerWidth * 1.7 / 2 * this.displayScale;
+						}else{
+							this.width = window.innerHeight * 2 / 1.7 * this.displayScale;
+							this.height = window.innerHeight * this.displayScale;
+						}
 					}
 				}
 
@@ -136,10 +152,14 @@
 				}
 			};
 
-
-			let displayA = new Display(0);
-
-			displayA.init();
+			if(displayAll){
+				let display0 = new Display(0);
+				let display1 = new Display(1);
+				let display2 = new Display(2);
+				let display3 = new Display(3);
+			}else{
+				let display0 = new Display(displayId);
+			}
 
 		</script>
 	</body>
