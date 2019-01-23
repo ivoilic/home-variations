@@ -162,6 +162,25 @@
 				let display0 = new Display(displayId);
 			}
 
+			function ready(fn) {
+				if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading"){
+					fn();
+				} else {
+					document.addEventListener('DOMContentLoaded', fn);
+				}
+			}
+
+			ready(()=>{
+				document.body.addEventListener("click", ()=>{
+					if(!document.fullscreenElement){
+						document.body.requestFullscreen();
+					}else{
+						document.exitFullscreen();
+					}
+					
+				});
+			});
+
 		</script>
 	</body>
 </html>
